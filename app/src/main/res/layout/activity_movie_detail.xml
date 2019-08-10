@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MovieDetailActivity">
+
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <ImageView
+                android:id="@+id/iv_detail_poster"
+                android:scaleType="centerCrop"
+                android:layout_width="200dp"
+                android:layout_height="260dp"
+                android:contentDescription="@string/cd_image" />
+
+            <LinearLayout
+                android:layout_marginStart="20dp"
+                android:paddingLeft="6dp"
+                android:paddingRight="6dp"
+                android:layout_marginTop="20dp"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:id="@+id/tv_user_rating_label"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/label_user_rating"/>
+                <TextView
+                    android:id="@+id/tv_user_rating"
+                    android:textColor="#000"
+                    android:textSize="20sp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+                <TextView
+                    android:id="@+id/tv_release_date_label"
+                    android:paddingTop="20dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/label_release_date"/>
+                <TextView
+                    android:id="@+id/tv_release_date"
+                    android:textColor="#000"
+                    android:textSize="20sp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+
+        <TextView
+            android:paddingRight="4dp"
+            android:paddingLeft="4dp"
+            android:layout_marginTop="10dp"
+            android:id="@+id/tv_synopsis_label"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/label_synopsis"/>
+        <TextView
+            android:id="@+id/tv_synopsis"
+            android:paddingLeft="4dp"
+            android:paddingRight="4dp"
+            android:textColor="#000"
+            android:textSize="18sp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+    </LinearLayout>
+
+</ScrollView>
