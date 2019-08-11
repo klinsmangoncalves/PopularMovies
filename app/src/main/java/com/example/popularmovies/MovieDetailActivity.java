@@ -20,6 +20,9 @@ public class MovieDetailActivity extends AppCompatActivity {
     private ImageView mPosterDetailImageView;
 
     /** Movie description */
+    private TextView mTitleTextView;
+
+    /** Movie description */
     private TextView mSynopsisTextView;
 
     /** Movie rating by the users */
@@ -35,6 +38,7 @@ public class MovieDetailActivity extends AppCompatActivity {
 
         // region Bind View Components
         mPosterDetailImageView = findViewById(R.id.iv_detail_poster);
+        mTitleTextView = findViewById(R.id.tv_movie_title);
         mSynopsisTextView = findViewById(R.id.tv_synopsis);
         mUserRatingTextView = findViewById(R.id.tv_user_rating);
         mReleasedDateTextView = findViewById(R.id.tv_release_date);
@@ -54,6 +58,7 @@ public class MovieDetailActivity extends AppCompatActivity {
      * */
     private void setMovieDetailData(Movie movie){
         mSynopsisTextView.setText(movie.getOverview());
+        mTitleTextView.setText(movie.getTitle());
         mUserRatingTextView.setText(String.valueOf(movie.getVoteAverage()));
         mReleasedDateTextView.setText(movie.getReleaseDate());
         Picasso.with(this).load(movie.getPosterPathUrl()).into(mPosterDetailImageView);
