@@ -28,18 +28,16 @@ import java.util.Locale;
 public class MainActivity extends AppCompatActivity implements MoviesAsyncTask.OnTaskEndListener, MovieAdapterClickListener {
 
     private static final String TAG = MainActivity.class.getName();
-    private final int GRID_LENGTH_PORTRAIT = 2;
-    private final int GRID_LENGTH_LANDSCAPE = 3;
 
     private final int PAGE_QUERY_POPULAR = 0;
     private final int PAGE_QUERY_TOP_RATED = 1;
 
-    RecyclerView mRecyclerView;
-    ProgressBar mProgressBar;
-    TextView mErrorMessage;
-    MovieAdapter mAdapter;
-    String mCurrentLanguage;
-    Integer mCurrentQuery;
+    private RecyclerView mRecyclerView;
+    private ProgressBar mProgressBar;
+    private TextView mErrorMessage;
+    private MovieAdapter mAdapter;
+    private String mCurrentLanguage;
+    private Integer mCurrentQuery;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,12 +90,13 @@ public class MainActivity extends AppCompatActivity implements MoviesAsyncTask.O
 
         GridLayoutManager gridLayoutManager;
 
-        /** In landscape more movie posters can be set in activity, so, it checks the
-         *  orientation before set the grid.
-         *  */
+        //In landscape more movie posters can be set in activity, so, it checks the
+        //  orientation before set the grid.
         if (orientation == Configuration.ORIENTATION_PORTRAIT) {
+            int GRID_LENGTH_PORTRAIT = 2;
             gridLayoutManager = new GridLayoutManager(this, GRID_LENGTH_PORTRAIT);
         } else {
+            int GRID_LENGTH_LANDSCAPE = 3;
             gridLayoutManager = new GridLayoutManager(this, GRID_LENGTH_LANDSCAPE);
         }
 

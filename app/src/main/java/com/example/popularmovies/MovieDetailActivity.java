@@ -9,22 +9,24 @@ import android.widget.TextView;
 import com.example.popularmovies.model.Movie;
 import com.squareup.picasso.Picasso;
 
+import java.util.Objects;
+
 public class MovieDetailActivity extends AppCompatActivity {
 
     /** String used to handle the data transferred from intent */
     public static final String MOVIE_KEY = "movie_key";
 
     /** Movie poster image */
-    ImageView mPosterDetailImageView;
+    private ImageView mPosterDetailImageView;
 
     /** Movie description */
-    TextView mSynopsisTextView;
+    private TextView mSynopsisTextView;
 
     /** Movie rating by the users */
-    TextView mUserRatingTextView;
+    private TextView mUserRatingTextView;
 
     /** Movie release date */
-    TextView mReleasedDateTextView;
+    private TextView mReleasedDateTextView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,8 +43,8 @@ public class MovieDetailActivity extends AppCompatActivity {
         // region Handle the data from Intent and set data
         Intent intent =  getIntent();
         if(intent.hasExtra(MOVIE_KEY)){
-            Movie movie = (Movie) intent.getExtras().getSerializable(MOVIE_KEY);
-            setMovieDetailData(movie);
+            Movie movie = (Movie) Objects.requireNonNull(intent.getExtras()).getSerializable(MOVIE_KEY);
+            setMovieDetailData(Objects.requireNonNull(movie));
         }
         // endregion
     }
@@ -50,7 +52,7 @@ public class MovieDetailActivity extends AppCompatActivity {
     /** Set the data retrieved from Intent in UI
      * @param movie to display
      * */
-    public void setMovieDetailData(Movie movie){
+    private void setMovieDetailData(Movie movie){
         mSynopsisTextView.setText(movie.getOverview());
         mUserRatingTextView.setText(String.valueOf(movie.getVoteAverage()));
         mReleasedDateTextView.setText(movie.getReleaseDate());

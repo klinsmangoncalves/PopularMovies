@@ -17,10 +17,6 @@ public class MoviesResponse {
         this.page = page;
     }
 
-    public Integer getTotal_results() {
-        return total_results;
-    }
-
     public void setTotal_results(Integer total_results) {
         this.total_results = total_results;
     }

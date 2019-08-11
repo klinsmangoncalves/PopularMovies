@@ -37,10 +37,10 @@ public final class NetworkUtils {
     private static final String  PATH_TOP_RATED = "/top_rated";
     private static final String  PATH_POPULAR = "/popular";
 
-    final static String LANGUAGE_PARAM = "language";
-    final static String PAGE_PARAM = "page";
-    final static String API_KEY_PARAM = "api_key";
-    final static String API_KEY_VALUE = "";
+    private final static String LANGUAGE_PARAM = "language";
+    private final static String PAGE_PARAM = "page";
+    private final static String API_KEY_PARAM = "api_key";
+    private final static String API_KEY_VALUE = "";
 
 
     /**
@@ -49,7 +49,7 @@ public final class NetworkUtils {
      * @param path The path to query
      * @return builder
      */
-    private static Uri.Builder getBaseUriBuiler(String endPoint, String path){
+    private static Uri.Builder getBaseUriBuilder(String endPoint, String path){
         return Uri.parse(BASE_URL + endPoint + path).buildUpon()
                 .appendQueryParameter(API_KEY_PARAM, API_KEY_VALUE);
     }
@@ -62,7 +62,7 @@ public final class NetworkUtils {
      * @return The URL to use to query the weather server.
      */
     private static URL buildUrlMoviesList(String path, String language, Integer page) {
-        Uri.Builder builder = getBaseUriBuiler(END_POINT_MOVIE_NAME, path);
+        Uri.Builder builder = getBaseUriBuilder(END_POINT_MOVIE_NAME, path);
 
         if(language != null){
             builder.appendQueryParameter(LANGUAGE_PARAM, language);

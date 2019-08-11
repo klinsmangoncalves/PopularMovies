@@ -108,7 +108,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
         /** Used to display the image poster in adapter */
         final ImageView ivPoster;
 
-        public MovieViewHolder(@NonNull View itemView) {
+        MovieViewHolder(@NonNull View itemView) {
             super(itemView);
             mMovieName = itemView.findViewById(R.id.tv_movie_name);
             ivPoster = itemView.findViewById(R.id.iv_movie_poster);
