@@ -2,6 +2,8 @@ package com.example.popularmovies;
 
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
@@ -18,19 +20,24 @@ import com.example.popularmovies.adapter.MovieAdapter;
 import com.example.popularmovies.adapter.MovieAdapterClickListener;
 import com.example.popularmovies.model.Movie;
 import com.example.popularmovies.model.MoviesResponse;
-import com.example.popularmovies.task.MoviesAsyncTask;
+import com.example.popularmovies.task.MoviesLoader;
 import com.example.popularmovies.util.NetworkUtils;
 import com.google.gson.Gson;
 
 import java.net.URL;
 import java.util.Locale;
 
-public class MainActivity extends AppCompatActivity implements MoviesAsyncTask.OnTaskEndListener, MovieAdapterClickListener {
+public class MainActivity extends AppCompatActivity implements MoviesLoader.OnTaskEndListener, MovieAdapterClickListener {
 
     private static final String TAG = MainActivity.class.getName();
 
     private final int PAGE_QUERY_POPULAR = 0;
     private final int PAGE_QUERY_TOP_RATED = 1;
+
+    public static final String URL_MOVIE_EXTRA = "url_extra";
+
+    private final int LOAD_MOVIE_LOADER_ID = 101;
+    private MoviesLoader mMoviesLoader;
 
     private RecyclerView mRecyclerView;
     private ProgressBar mProgressBar;
@@ -38,6 +45,9 @@ public class MainActivity extends AppCompatActivity implements MoviesAsyncTask.O
     private MovieAdapter mAdapter;
     private String mCurrentLanguage;
     private Integer mCurrentQuery;
+
+    private String CURRENT_QUERY_EXTRA = "current_query_extra";
+    private String CURRENT_PAGE_EXTRA = "current_page_extra";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,7 +57,20 @@ public class MainActivity extends AppCompatActivity implements MoviesAsyncTask.O
         mProgressBar = findViewById(R.id.pb_loading_movies);
         mErrorMessage = findViewById(R.id.tv_loading_error_message);
         mCurrentLanguage = Locale.getDefault().getLanguage();
-        requestTopRatedMovies(null);
+
+        mMoviesLoader = new MoviesLoader(this, this);
+        getSupportLoaderManager().initLoader(LOAD_MOVIE_LOADER_ID, null, mMoviesLoader);
+
+        //restore the user state
+        if(savedInstanceState != null && savedInstanceState.containsKey(CURRENT_QUERY_EXTRA) && savedInstanceState.containsKey(CURRENT_PAGE_EXTRA)){
+            int currentPage = savedInstanceState.getInt(CURRENT_PAGE_EXTRA);
+            int currentQuery = savedInstanceState.getInt(CURRENT_QUERY_EXTRA);
+            goToPage(currentQuery, currentPage);
+        } else {
+            //default page when app starts
+            requestTopRatedMovies(null);
+
+        }
     }
 
     @Override
@@ -114,18 +137,47 @@ public class MainActivity extends AppCompatActivity implements MoviesAsyncTask.O
         showList();
     }
 
+
+    private void runNetworkTaskInBackground(URL moviesUrl){
+        Bundle bundle = new Bundle();
+        bundle.putSerializable(URL_MOVIE_EXTRA, moviesUrl);
+
+        LoaderManager loaderManager = getSupportLoaderManager();
+        Loader<String> stringLoader = loaderManager.getLoader(LOAD_MOVIE_LOADER_ID);
+        if(stringLoader == null){
+            Log.d("LOADER_MOVIE", "initLoader");
+            loaderManager.initLoader(LOAD_MOVIE_LOADER_ID, bundle, mMoviesLoader);
+        } else {
+            Log.d("LOADER_MOVIE", "restartLoader");
+            loaderManager.restartLoader(LOAD_MOVIE_LOADER_ID, bundle, mMoviesLoader);
+        }
+    }
+
     private void requestPopularMovies(Integer page) {
         showLoading();
         mCurrentQuery = PAGE_QUERY_POPULAR;
         URL popularMovies = NetworkUtils.buildUrlMoviesPopular(mCurrentLanguage, page);
-        new MoviesAsyncTask(this).execute(popularMovies);
+        runNetworkTaskInBackground(popularMovies);
     }
 
     private void requestTopRatedMovies(Integer page) {
         showLoading();
         mCurrentQuery = PAGE_QUERY_TOP_RATED;
         URL topRatedMovies = NetworkUtils.buildUrlMoviesTopRated(mCurrentLanguage, page);
-        new MoviesAsyncTask(this).execute(topRatedMovies);
+        runNetworkTaskInBackground(topRatedMovies);
+    }
+
+    private void goToPage(Integer queryPath, int page) {
+        switch (queryPath) {
+            case PAGE_QUERY_POPULAR:
+                requestPopularMovies(page);
+                break;
+
+            case PAGE_QUERY_TOP_RATED:
+                requestTopRatedMovies(page);
+                break;
+        }
+
     }
 
     private void goToNextPage() {
@@ -200,6 +252,13 @@ public class MainActivity extends AppCompatActivity implements MoviesAsyncTask.O
                 return false;
         }
 
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt(CURRENT_QUERY_EXTRA, mCurrentQuery);
+        outState.putInt(CURRENT_PAGE_EXTRA, mAdapter.getCurrentPage());
     }
 
     @Override
