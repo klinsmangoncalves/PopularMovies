@@ -1,12 +1,11 @@
 package com.example.popularmovies;
 
 import android.content.Intent;
-import android.content.res.Configuration;
+import android.net.Uri;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -14,11 +13,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.popularmovies.adapter.MovieAdapter;
+import com.example.popularmovies.adapter.ReviewAdapter;
 import com.example.popularmovies.adapter.TrailerAdapter;
 import com.example.popularmovies.model.Movie;
-import com.example.popularmovies.model.MoviesResponse;
+import com.example.popularmovies.model.Review;
 import com.example.popularmovies.model.Trailer;
+import com.example.popularmovies.task.ReviewsLoader;
 import com.example.popularmovies.task.TrailersLoader;
 import com.example.popularmovies.util.NetworkUtils;
 import com.google.gson.Gson;
@@ -28,12 +28,13 @@ import java.net.URL;
 import java.util.Locale;
 import java.util.Objects;
 
-public class MovieDetailActivity extends AppCompatActivity implements  TrailersLoader.OnTrailerLoadFinish, TrailerAdapter.OnTrailerClickListener{
+public class MovieDetailActivity extends AppCompatActivity implements  TrailersLoader.OnTrailerLoadFinish, TrailerAdapter.OnTrailerClickListener, ReviewsLoader.OnReviewLoadFinish {
 
     private String TAG = "MovieDetailActivity";
     private static int TRAILER_LOADER_ID = 102;
+    private static int REVIEW_LOADER_ID = 103;
     public static String TRAILER_URL_EXTRA = "trailer_url_extra";
-
+    public static final String REVIEW_URL_EXTRA = "review_url_extra";
 
     /** String used to handle the data transferred from intent */
     public static final String MOVIE_KEY = "movie_key";
@@ -54,10 +55,14 @@ public class MovieDetailActivity extends AppCompatActivity implements  TrailersL
     private TextView mReleasedDateTextView;
 
     private RecyclerView mRecyclerViewTrailer;
-
+    private RecyclerView mRecyclerViewReview;
 
     private TrailersLoader trailersLoader;
     private TrailerAdapter mTrailerAdapter;
+
+    private ReviewsLoader mReviewsLoader;
+    private ReviewAdapter mReviewsAdapter;
+
     private String lang;
 
     @Override
@@ -72,6 +77,7 @@ public class MovieDetailActivity extends AppCompatActivity implements  TrailersL
         mUserRatingTextView = findViewById(R.id.tv_user_rating);
         mReleasedDateTextView = findViewById(R.id.tv_release_date);
         mRecyclerViewTrailer = findViewById(R.id.rv_trailers_list);
+        mRecyclerViewReview = findViewById(R.id.rv_review_list);
         // endregion
 
         // region Handle the data from Intent and set data
@@ -86,9 +92,12 @@ public class MovieDetailActivity extends AppCompatActivity implements  TrailersL
 
         lang = Locale.getDefault().getLanguage();
         trailersLoader = new TrailersLoader(this, this);
+        mReviewsLoader = new ReviewsLoader(this, this);
         getSupportLoaderManager().initLoader(TRAILER_LOADER_ID, null, trailersLoader);
+        getSupportLoaderManager().initLoader(REVIEW_LOADER_ID, null, mReviewsLoader);
 
         getTrailers(movie.getId());
+        getReviews(movie.getId());
     }
 
     /** Set the data retrieved from Intent in UI
@@ -115,12 +124,26 @@ public class MovieDetailActivity extends AppCompatActivity implements  TrailersL
         } else{
             loaderManager.restartLoader(TRAILER_LOADER_ID, bundle, trailersLoader);
         }
-
     }
+
+    private void getReviews(Long trailerId) {
+        URL reviewsURL = NetworkUtils.buildUrlMovieReviews(trailerId, lang);
+        LoaderManager loaderManager = getSupportLoaderManager();
+        Loader<String> loader = loaderManager.getLoader(REVIEW_LOADER_ID);
+
+        Bundle bundle = new Bundle();
+        bundle.putSerializable(REVIEW_URL_EXTRA, reviewsURL);
+
+        if(loader == null){
+            loaderManager.initLoader(REVIEW_LOADER_ID, bundle, mReviewsLoader);
+        } else{
+            loaderManager.restartLoader(REVIEW_LOADER_ID, bundle, mReviewsLoader);
+        }
+    }
+
 
     @Override
     public void trailerLoadFinish(String trailersJson) {
-
         if (trailersJson == null) {
             Log.d(TAG, "Error Loading data, check connection");
             Toast.makeText(getApplicationContext(), "An Error occurred", Toast.LENGTH_LONG).show();
@@ -130,13 +153,40 @@ public class MovieDetailActivity extends AppCompatActivity implements  TrailersL
         Gson gson = new Gson();
         Trailer trailer = gson.fromJson(trailersJson, Trailer.class);
         Log.d(TAG, trailersJson);
-        setAdapterData(trailer);
-
+        setAdapterTrailerData(trailer);
     }
 
-    private void setAdapterData(Trailer trailer) {
-        Log.d(TAG, "Setting adapter");
+    @Override
+    public void reviewLoadFinish(String reviewsJson) {
+        if (reviewsJson == null) {
+            Log.d(TAG, "Error Loading data, check connection");
+            Toast.makeText(getApplicationContext(), "An Error occurred", Toast.LENGTH_LONG).show();
+            return;
+        }
 
+        Gson gson = new Gson();
+        Review review = gson.fromJson(reviewsJson, Review.class);
+        Log.d(TAG, reviewsJson);
+        setAdapterReviewData(review);
+    }
+
+    private void setAdapterReviewData(Review review) {
+        Log.d(TAG, "setAdapterReviewData");
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getApplicationContext());
+
+        mRecyclerViewReview.setLayoutManager(linearLayoutManager);
+        mRecyclerViewReview.setHasFixedSize(true);
+
+        if (mReviewsAdapter == null) {
+            mReviewsAdapter = new ReviewAdapter(review.getResults());
+            mRecyclerViewReview.setAdapter(mReviewsAdapter);
+        } else {
+            mReviewsAdapter.setmReviews(review.getResults());
+        }
+    }
+
+    private void setAdapterTrailerData(Trailer trailer) {
+        Log.d(TAG, "setAdapterTrailerData");
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getApplicationContext());
 
         mRecyclerViewTrailer.setLayoutManager(linearLayoutManager);
@@ -148,11 +198,16 @@ public class MovieDetailActivity extends AppCompatActivity implements  TrailersL
         } else {
             mTrailerAdapter.setTrailerDetails(trailer.getResults());
         }
-
     }
 
     @Override
-    public void onTrailerClickListener(String trailerName) {
+    public void onTrailerClickListener(String youTubeKey) {
+        Intent videoClient = new Intent(Intent.ACTION_VIEW,
+                Uri.parse("http://www.youtube.com/watch?v=" + youTubeKey));
+
+        startActivity(videoClient);
 
     }
+
+
 }

@@ -20,6 +20,10 @@ public class Trailer {
         Integer size;
         String type;
 
+        public String getKey() {
+            return key;
+        }
+
         public String getName() {
             return name;
         }

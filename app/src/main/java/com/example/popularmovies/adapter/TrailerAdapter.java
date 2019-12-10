@@ -66,7 +66,7 @@ public class TrailerAdapter extends RecyclerView.Adapter<TrailerAdapter.TrailerV
         public void onClick(View v) {
             int i = getAdapterPosition();
             Trailer.TrailerDetail trailer = trailerDetails.get(i);
-            mTrailerClickListener.onTrailerClickListener(trailer.getName());
+            mTrailerClickListener.onTrailerClickListener(trailer.getKey());
         }
     }
 }

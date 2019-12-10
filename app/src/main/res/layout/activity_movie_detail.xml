@@ -1,117 +1,150 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     tools:context=".MovieDetailActivity">
 
-
-    <LinearLayout
-        android:orientation="vertical"
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-
         <LinearLayout
-            android:orientation="horizontal"
+            android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
-            <ImageView
-                android:id="@+id/iv_detail_poster"
-                android:scaleType="centerCrop"
-                android:layout_width="200dp"
-                android:layout_height="260dp"
-                android:contentDescription="@string/cd_image" />
+
 
             <LinearLayout
-                android:layout_marginStart="20dp"
-                android:paddingLeft="6dp"
-                android:paddingRight="6dp"
-                android:layout_marginTop="20dp"
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <ImageView
+                    android:id="@+id/iv_detail_poster"
+                    android:scaleType="centerCrop"
+                    android:layout_width="200dp"
+                    android:layout_height="260dp"
+                    android:contentDescription="@string/cd_image" />
+
+                <LinearLayout
+                    android:layout_marginStart="20dp"
+                    android:paddingLeft="6dp"
+                    android:paddingRight="6dp"
+                    android:layout_marginTop="20dp"
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:id="@+id/tv_movie_title"
+                        android:textColor="#000"
+                        android:textSize="25sp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+
+                    <TextView
+                        android:id="@+id/tv_user_rating_label"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/label_user_rating"/>
+                    <TextView
+                        android:id="@+id/tv_user_rating"
+                        android:textColor="#000"
+                        android:textSize="20sp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+                    <TextView
+                        android:id="@+id/tv_release_date_label"
+                        android:paddingTop="20dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/label_release_date"/>
+                    <TextView
+                        android:id="@+id/tv_release_date"
+                        android:textColor="#000"
+                        android:textSize="20sp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+
+                    <Button
+                        android:id="@+id/bt_favorite"
+                        android:layout_width="wrap_content"
+                        style="@style/Widget.AppCompat.Button.Colored"
+                        android:layout_height="wrap_content"
+                        android:textColor="#000"
+                        android:drawableLeft="@drawable/ic_star_black_24dp"
+                        android:text="Favorite" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <LinearLayout
                 android:orientation="vertical"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
                 <TextView
-                    android:id="@+id/tv_movie_title"
-                    android:textColor="#000"
-                    android:textSize="25sp"
+                    android:paddingRight="4dp"
+                    android:paddingLeft="4dp"
+                    android:layout_marginTop="10dp"
+                    android:id="@+id/tv_synopsis_label"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:text="@string/label_synopsis"/>
 
                 <TextView
-                    android:id="@+id/tv_user_rating_label"
+                    android:id="@+id/tv_synopsis"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/label_user_rating"/>
-                <TextView
-                    android:id="@+id/tv_user_rating"
+                    android:paddingLeft="4dp"
+                    android:paddingRight="4dp"
+                    android:text="The kingdom of Arendelle needs to be evacuated when the forces of nature threaten to destroy it. Elsa, Anna, Olaf and Kristoff set off to find some answers. But Elsa has been distracted. She has been hearing an unfamiliar voice calling out to her in a strange tune. Led by her, the grouThe kingdom of Arendelle needs to be evacuated when the forces of nature threaten to destroy it. Elsa, Anna, Olaf and Kristoff set off to find some answers. But Elsa has been distracted. She has been hearing an unfamiliar voice calling out to her in a strange tune. Led by her, the group follows the melody to find themselves at the edge of an Enchanted Forest with untold mysteries and dangers.p follows the melody to find themselves at the edge of an Enchanted Forest with untold mysteries and dangers."
                     android:textColor="#000"
-                    android:textSize="20sp"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    android:textSize="18sp" />
+
                 <TextView
-                    android:id="@+id/tv_release_date_label"
-                    android:paddingTop="20dp"
+                    android:paddingRight="4dp"
+                    android:paddingLeft="4dp"
+                    android:layout_marginTop="10dp"
+                    android:id="@+id/tv_trailers_label"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/label_release_date"/>
-                <TextView
-                    android:id="@+id/tv_release_date"
-                    android:textColor="#000"
-                    android:textSize="20sp"
+                    android:text="Trailers"/>
+
+
+                <RelativeLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content">
+                    <android.support.v7.widget.RecyclerView
+                        android:id="@+id/rv_trailers_list"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                    </android.support.v7.widget.RecyclerView>
+
+                </RelativeLayout>
+
+                <TextView
+                    android:paddingRight="4dp"
+                    android:paddingLeft="4dp"
+                    android:layout_marginTop="10dp"
+                    android:id="@+id/tv_reviews_label"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Reviews"/>
+
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/rv_review_list"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
 
             </LinearLayout>
 
+
         </LinearLayout>
 
+    </ScrollView>
 
-        <TextView
-            android:paddingRight="4dp"
-            android:paddingLeft="4dp"
-            android:layout_marginTop="10dp"
-            android:id="@+id/tv_synopsis_label"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/label_synopsis"/>
-        <TextView
-            android:id="@+id/tv_synopsis"
-            android:text="aaaaaaaaaaaa"
-            android:paddingLeft="4dp"
-            android:paddingRight="4dp"
-            android:textColor="#000"
-            android:textSize="18sp"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-
-        <TextView
-            android:paddingRight="4dp"
-            android:paddingLeft="4dp"
-            android:layout_marginTop="10dp"
-            android:id="@+id/tv_trailers_label"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Trailers"/>
-
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/rv_trailers_list"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-        </android.support.v7.widget.RecyclerView>
-
-        <TextView
-            android:paddingRight="4dp"
-            android:paddingLeft="4dp"
-            android:layout_marginTop="10dp"
-            android:id="@+id/tv_reviews_label"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Reviews"/>
-
-
-    </LinearLayout>
-
-</ScrollView>
+</FrameLayout>
