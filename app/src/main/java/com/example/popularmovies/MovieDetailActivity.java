@@ -71,6 +71,7 @@ public class MovieDetailActivity extends AppCompatActivity implements  TrailersL
         mSynopsisTextView = findViewById(R.id.tv_synopsis);
         mUserRatingTextView = findViewById(R.id.tv_user_rating);
         mReleasedDateTextView = findViewById(R.id.tv_release_date);
+        mRecyclerViewTrailer = findViewById(R.id.rv_trailers_list);
         // endregion
 
         // region Handle the data from Intent and set data

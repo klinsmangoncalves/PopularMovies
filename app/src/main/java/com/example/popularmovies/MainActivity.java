@@ -257,8 +257,11 @@ public class MainActivity extends AppCompatActivity implements MoviesLoader.OnTa
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putInt(CURRENT_QUERY_EXTRA, mCurrentQuery);
-        outState.putInt(CURRENT_PAGE_EXTRA, mAdapter.getCurrentPage());
+        if(outState != null){
+            outState.putInt(CURRENT_QUERY_EXTRA, mCurrentQuery);
+            if(mAdapter != null)
+                outState.putInt(CURRENT_PAGE_EXTRA, mAdapter.getCurrentPage());
+        }
     }
 
     @Override

@@ -142,14 +142,14 @@ public final class NetworkUtils {
      * Get the videos list from movie using default language values.
      * */
     public static URL buildUrlMovieVideos(Long movieId, String lang) {
-        return buildUrlMoviesDetail(movieId + END_POINT_VIDEOS, lang);
+        return buildUrlMoviesDetail("/" + movieId + END_POINT_VIDEOS, lang);
     }
 
     /**
      * Get the reviews list from movie using default language values.
      * */
     public static URL buildUrlMovieReviews(Long movieId, String lang) {
-        return buildUrlMoviesDetail(movieId + END_POINT_REVIEWS, lang);
+        return buildUrlMoviesDetail("/" + movieId + END_POINT_REVIEWS, lang);
     }
 
     /**

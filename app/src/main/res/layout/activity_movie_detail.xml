@@ -78,6 +78,7 @@
             android:text="@string/label_synopsis"/>
         <TextView
             android:id="@+id/tv_synopsis"
+            android:text="aaaaaaaaaaaa"
             android:paddingLeft="4dp"
             android:paddingRight="4dp"
             android:textColor="#000"
@@ -85,7 +86,16 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
+        <TextView
+            android:paddingRight="4dp"
+            android:paddingLeft="4dp"
+            android:layout_marginTop="10dp"
+            android:id="@+id/tv_trailers_label"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Trailers"/>
         <android.support.v7.widget.RecyclerView
+            android:id="@+id/rv_trailers_list"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
