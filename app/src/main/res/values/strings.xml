@@ -9,7 +9,7 @@
     <string name="label_user_rating">User Rating:</string>
     <string name="label_release_date">Release Date:</string>
     <string name="cd_title">Movie title</string>
-    <string name="cd_image">Movie image</string>
+    <string name="cd_image">Trailer image</string>
     <string name="menu_next">Next</string>
     <string name="menu_back">Back</string>
 

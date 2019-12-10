@@ -58,4 +58,7 @@ public class Movie implements Serializable {
         return releaseDate;
     }
 
+    public Long getId() {
+        return id;
+    }
 }

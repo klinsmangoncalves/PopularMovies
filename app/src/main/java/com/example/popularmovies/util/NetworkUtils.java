@@ -34,6 +34,8 @@ public final class NetworkUtils {
 
     private static final String BASE_URL = "https://api.themoviedb.org/3";
     private static final String  END_POINT_MOVIE_NAME = "/movie";
+    private static final String  END_POINT_REVIEWS = "/reviews";
+    private static final String  END_POINT_VIDEOS = "/videos";
     private static final String  PATH_TOP_RATED = "/top_rated";
     private static final String  PATH_POPULAR = "/popular";
 
@@ -86,6 +88,28 @@ public final class NetworkUtils {
         return url;
     }
 
+    private static URL buildUrlMoviesDetail(String path, String language) {
+        Uri.Builder builder = getBaseUriBuilder(END_POINT_MOVIE_NAME, path);
+
+        if(language != null){
+            builder.appendQueryParameter(LANGUAGE_PARAM, language);
+        }
+
+        Uri builtUri = builder.build();
+
+        URL url = null;
+        try {
+            url = new URL(builtUri.toString());
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+
+        Log.v(TAG, "Built URI " + url);
+
+        return url;
+    }
+
+
     /**
      * Get the top rated movies list using default values.
      * */
@@ -112,6 +136,20 @@ public final class NetworkUtils {
      * */
     public static URL buildUrlMoviesPopular(String lang, Integer page) {
         return buildUrlMoviesList(PATH_POPULAR, lang, page);
+    }
+
+    /**
+     * Get the videos list from movie using default language values.
+     * */
+    public static URL buildUrlMovieVideos(Long movieId, String lang) {
+        return buildUrlMoviesDetail(movieId + END_POINT_VIDEOS, lang);
+    }
+
+    /**
+     * Get the reviews list from movie using default language values.
+     * */
+    public static URL buildUrlMovieReviews(Long movieId, String lang) {
+        return buildUrlMoviesDetail(movieId + END_POINT_REVIEWS, lang);
     }
 
     /**
