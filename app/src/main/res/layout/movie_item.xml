@@ -17,7 +17,7 @@
         app:srcCompat="@drawable/ic_launcher_foreground" />
 
     <TextView
-        android:textColor="#cfd8dc"
+        android:textColor="@color/movieName"
         android:textStyle="bold"
         android:paddingRight="1dp"
         android:paddingLeft="1dp"

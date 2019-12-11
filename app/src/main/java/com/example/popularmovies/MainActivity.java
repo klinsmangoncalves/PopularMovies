@@ -97,22 +97,22 @@ public class MainActivity extends AppCompatActivity implements MoviesLoader.OnTa
     }
 
     private void showError() {
-        mProgressBar.setVisibility(View.INVISIBLE);
-        mRecyclerView.setVisibility(View.INVISIBLE);
+        mProgressBar.setVisibility(View.GONE );
+        mRecyclerView.setVisibility(View.GONE );
         mErrorMessage.setVisibility(View.VISIBLE);
     }
 
     private void showLoading() {
         mProgressBar.setVisibility(View.VISIBLE);
-        mRecyclerView.setVisibility(View.INVISIBLE);
-        mErrorMessage.setVisibility(View.INVISIBLE);
+        mRecyclerView.setVisibility(View.GONE );
+        mErrorMessage.setVisibility(View.GONE );
 
     }
 
     private void showList() {
-        mProgressBar.setVisibility(View.INVISIBLE);
+        mProgressBar.setVisibility(View.GONE );
         mRecyclerView.setVisibility(View.VISIBLE);
-        mErrorMessage.setVisibility(View.INVISIBLE);
+        mErrorMessage.setVisibility(View.GONE);
 
     }
 
@@ -247,6 +247,10 @@ public class MainActivity extends AppCompatActivity implements MoviesLoader.OnTa
 
     private void goToNextPage() {
         if (mCurrentQuery == null) {
+            return;
+        }
+
+        if(mAdapter == null){
             return;
         }
 

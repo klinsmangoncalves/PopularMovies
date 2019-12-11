@@ -12,7 +12,7 @@
         android:layout_height="wrap_content"
         android:fontFamily="serif"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-        android:textColor="#000"
+        android:textColor="@color/colorPrimaryDark"
         tools:text="Authors says:" />
 
     <TextView
