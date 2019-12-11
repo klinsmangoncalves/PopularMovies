@@ -278,6 +278,10 @@ public class MainActivity extends AppCompatActivity implements MoviesLoader.OnTa
             return;
         }
 
+        if(mAdapter == null){
+            return;
+        }
+
         if (!mAdapter.hasBackPage()) {
             Toast.makeText(getApplicationContext(), getString(R.string.no_pages_to_show), Toast.LENGTH_LONG).show();
             return;
