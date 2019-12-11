@@ -1,5 +1,6 @@
 package com.example.popularmovies.model;
 
+
 import java.util.List;
 
 public class MoviesResponse {
@@ -8,6 +9,9 @@ public class MoviesResponse {
     private Integer total_pages;
     private List<Movie> results;
 
+    public MoviesResponse() {
+
+    }
 
     public Integer getPage() {
         return page;

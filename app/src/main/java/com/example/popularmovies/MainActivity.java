@@ -1,7 +1,11 @@
 package com.example.popularmovies;
 
+import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.support.annotation.Nullable;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
@@ -18,6 +22,8 @@ import android.widget.Toast;
 
 import com.example.popularmovies.adapter.MovieAdapter;
 import com.example.popularmovies.adapter.MovieAdapterClickListener;
+import com.example.popularmovies.database.AppDatabase;
+import com.example.popularmovies.database.FavoriteEntity;
 import com.example.popularmovies.model.Movie;
 import com.example.popularmovies.model.MoviesResponse;
 import com.example.popularmovies.task.MoviesLoader;
@@ -25,6 +31,7 @@ import com.example.popularmovies.util.NetworkUtils;
 import com.google.gson.Gson;
 
 import java.net.URL;
+import java.util.List;
 import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity implements MoviesLoader.OnTaskEndListener, MovieAdapterClickListener {
@@ -35,6 +42,7 @@ public class MainActivity extends AppCompatActivity implements MoviesLoader.OnTa
     private final int PAGE_QUERY_TOP_RATED = 1;
 
     public static final String URL_MOVIE_EXTRA = "url_extra";
+
 
     private final int LOAD_MOVIE_LOADER_ID = 101;
     private MoviesLoader mMoviesLoader;
@@ -49,6 +57,8 @@ public class MainActivity extends AppCompatActivity implements MoviesLoader.OnTa
     private String CURRENT_QUERY_EXTRA = "current_query_extra";
     private String CURRENT_PAGE_EXTRA = "current_page_extra";
 
+    private AppDatabase appDB;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -59,7 +69,6 @@ public class MainActivity extends AppCompatActivity implements MoviesLoader.OnTa
         mCurrentLanguage = Locale.getDefault().getLanguage();
 
         mMoviesLoader = new MoviesLoader(this, this);
-        getSupportLoaderManager().initLoader(LOAD_MOVIE_LOADER_ID, null, mMoviesLoader);
 
         //restore the user state
         if(savedInstanceState != null && savedInstanceState.containsKey(CURRENT_QUERY_EXTRA) && savedInstanceState.containsKey(CURRENT_PAGE_EXTRA)){
@@ -71,6 +80,8 @@ public class MainActivity extends AppCompatActivity implements MoviesLoader.OnTa
             requestTopRatedMovies(null);
 
         }
+
+        appDB = AppDatabase.getInstance(getApplicationContext());
     }
 
     @Override
@@ -137,6 +148,38 @@ public class MainActivity extends AppCompatActivity implements MoviesLoader.OnTa
         showList();
     }
 
+    private void setAdapterFavorite(List<FavoriteEntity> favorites) {
+        Log.d(TAG, "Setting adapter");
+        int orientation = getResources().getConfiguration().orientation;
+
+        GridLayoutManager gridLayoutManager;
+
+        //In landscape more movie posters can be set in activity, so, it checks the
+        //  orientation before set the grid.
+        if (orientation == Configuration.ORIENTATION_PORTRAIT) {
+            int GRID_LENGTH_PORTRAIT = 2;
+            gridLayoutManager = new GridLayoutManager(this, GRID_LENGTH_PORTRAIT);
+        } else {
+            int GRID_LENGTH_LANDSCAPE = 3;
+            gridLayoutManager = new GridLayoutManager(this, GRID_LENGTH_LANDSCAPE);
+        }
+
+        mRecyclerView.setLayoutManager(gridLayoutManager);
+        mRecyclerView.setHasFixedSize(true);
+
+        List<Movie> movies = Movie.getMoviesListFromFavorites(favorites);
+
+        if (mAdapter == null) {
+            mAdapter = new MovieAdapter(movies, this);
+            mRecyclerView.setAdapter(mAdapter);
+        } else {
+            mAdapter.setMovies(movies);
+        }
+        mAdapter.setCurrentPage(1);
+        mAdapter.setTotalPages(1);
+        showList();
+    }
+
 
     private void runNetworkTaskInBackground(URL moviesUrl){
         Bundle bundle = new Bundle();
@@ -165,6 +208,32 @@ public class MainActivity extends AppCompatActivity implements MoviesLoader.OnTa
         mCurrentQuery = PAGE_QUERY_TOP_RATED;
         URL topRatedMovies = NetworkUtils.buildUrlMoviesTopRated(mCurrentLanguage, page);
         runNetworkTaskInBackground(topRatedMovies);
+    }
+
+    private void requestFavorites() {
+        getSupportLoaderManager().destroyLoader(LOAD_MOVIE_LOADER_ID);
+        showLoading();
+        final LiveData<List<FavoriteEntity>> favorites = appDB.getFavoriteDao().getAllFavorites();
+        favorites.observe(this, new Observer<List<FavoriteEntity>>() {
+            @Override
+            public void onChanged(@Nullable List<FavoriteEntity> favoriteEntities) {
+                setAdapterFavorite(favoriteEntities);
+                favorites.removeObserver(this);
+            }
+        });
+    }
+
+    private void requestFavoritesViewModel() {
+        showLoading();
+
+        FavoriteViewModel viewModel = ViewModelProviders.of(this).get(FavoriteViewModel.class);
+        viewModel.getFavorites().observe(this, new Observer<List<FavoriteEntity>>() {
+            @Override
+            public void onChanged(@Nullable List<FavoriteEntity> favoriteEntities) {
+                setAdapterFavorite(favoriteEntities);
+            }
+        });
+
     }
 
     private void goToPage(Integer queryPath, int page) {
@@ -241,6 +310,9 @@ public class MainActivity extends AppCompatActivity implements MoviesLoader.OnTa
                 return true;
             case R.id.menu_sort_top_rated:
                 requestTopRatedMovies(null);
+                return true;
+            case R.id.menu_sort_favorites:
+                requestFavorites();
                 return true;
             case R.id.menu_next:
                 goToNextPage();

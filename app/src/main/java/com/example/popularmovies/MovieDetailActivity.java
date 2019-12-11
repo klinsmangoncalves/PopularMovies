@@ -1,7 +1,11 @@
 package com.example.popularmovies;
 
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModel;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.net.Uri;
+import android.support.annotation.Nullable;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
@@ -9,15 +13,20 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.popularmovies.adapter.ReviewAdapter;
 import com.example.popularmovies.adapter.TrailerAdapter;
+import com.example.popularmovies.database.AppDatabase;
+import com.example.popularmovies.database.FavoriteEntity;
 import com.example.popularmovies.model.Movie;
 import com.example.popularmovies.model.Review;
 import com.example.popularmovies.model.Trailer;
+import com.example.popularmovies.task.FavoriteLoader;
 import com.example.popularmovies.task.ReviewsLoader;
 import com.example.popularmovies.task.TrailersLoader;
 import com.example.popularmovies.util.NetworkUtils;
@@ -33,8 +42,14 @@ public class MovieDetailActivity extends AppCompatActivity implements  TrailersL
     private String TAG = "MovieDetailActivity";
     private static int TRAILER_LOADER_ID = 102;
     private static int REVIEW_LOADER_ID = 103;
+    private static int FAVORITE_LOADER_ID = 104;
     public static String TRAILER_URL_EXTRA = "trailer_url_extra";
     public static final String REVIEW_URL_EXTRA = "review_url_extra";
+    public static final String FAVORITE_EXTRA = "favorite_extra";
+    public static final String WRITE_OPTION_EXTRA = "delete_insert_option_extra";
+    public static final Integer OPTION_INSERT = 1;
+    public static final Integer OPTION_DELETE = 0;
+
 
     /** String used to handle the data transferred from intent */
     public static final String MOVIE_KEY = "movie_key";
@@ -54,6 +69,10 @@ public class MovieDetailActivity extends AppCompatActivity implements  TrailersL
     /** Movie release date */
     private TextView mReleasedDateTextView;
 
+    private Button mBtFavorite;
+
+    private FavoriteLoader mFavoriteLoader;
+
     private RecyclerView mRecyclerViewTrailer;
     private RecyclerView mRecyclerViewReview;
 
@@ -64,6 +83,8 @@ public class MovieDetailActivity extends AppCompatActivity implements  TrailersL
     private ReviewAdapter mReviewsAdapter;
 
     private String lang;
+
+    private Movie currentMovie;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,7 +99,15 @@ public class MovieDetailActivity extends AppCompatActivity implements  TrailersL
         mReleasedDateTextView = findViewById(R.id.tv_release_date);
         mRecyclerViewTrailer = findViewById(R.id.rv_trailers_list);
         mRecyclerViewReview = findViewById(R.id.rv_review_list);
+        mBtFavorite = findViewById(R.id.bt_favorite);
         // endregion
+
+        mBtFavorite.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onClickFavoriteMovie();
+            }
+        });
 
         // region Handle the data from Intent and set data
         Intent intent =  getIntent();
@@ -86,29 +115,78 @@ public class MovieDetailActivity extends AppCompatActivity implements  TrailersL
             return;
         }
 
-        Movie movie = (Movie) Objects.requireNonNull(intent.getExtras()).getSerializable(MOVIE_KEY);
-        setMovieDetailData(Objects.requireNonNull(movie));
+        currentMovie = (Movie) Objects.requireNonNull(intent.getExtras()).getSerializable(MOVIE_KEY);
+        setMovieDetailData(Objects.requireNonNull(currentMovie));
         // endregion
 
         lang = Locale.getDefault().getLanguage();
         trailersLoader = new TrailersLoader(this, this);
         mReviewsLoader = new ReviewsLoader(this, this);
-        getSupportLoaderManager().initLoader(TRAILER_LOADER_ID, null, trailersLoader);
-        getSupportLoaderManager().initLoader(REVIEW_LOADER_ID, null, mReviewsLoader);
+        mFavoriteLoader = new FavoriteLoader(this);
 
-        getTrailers(movie.getId());
-        getReviews(movie.getId());
+        getTrailers(currentMovie.getId());
+        getReviews(currentMovie.getId());
+
+
+    }
+
+    public void onClickFavoriteMovie(){
+
+        FavoriteEntity favoriteEntity = new FavoriteEntity(currentMovie);
+        LoaderManager loaderManager = getSupportLoaderManager();
+        Loader<Void> loader = loaderManager.getLoader(FAVORITE_LOADER_ID);
+
+        Bundle bundle = new Bundle();
+        bundle.putSerializable(FAVORITE_EXTRA, favoriteEntity);
+
+        if(currentMovie.isFavorite() != null && currentMovie.isFavorite()){
+            bundle.putInt(WRITE_OPTION_EXTRA, OPTION_DELETE);
+        }else{
+            bundle.putInt(WRITE_OPTION_EXTRA, OPTION_INSERT);
+        }
+
+
+
+        if(loader == null){
+            loaderManager.initLoader(FAVORITE_LOADER_ID, bundle, mFavoriteLoader);
+        } else{
+            loaderManager.restartLoader(FAVORITE_LOADER_ID, bundle, mFavoriteLoader);
+        }
     }
 
     /** Set the data retrieved from Intent in UI
      * @param movie to display
      * */
     private void setMovieDetailData(Movie movie){
+        verifyIfMovieIsFavorite(movie.getId());
         mSynopsisTextView.setText(movie.getOverview());
         mTitleTextView.setText(movie.getTitle());
         mUserRatingTextView.setText(String.valueOf(movie.getVoteAverage()));
         mReleasedDateTextView.setText(movie.getReleaseDate());
         Picasso.with(this).load(movie.getPosterPathUrl()).into(mPosterDetailImageView);
+    }
+
+    private void verifyIfMovieIsFavorite(Long id){
+        FavoriteFilterViewModelFactory factory = new FavoriteFilterViewModelFactory(AppDatabase.getInstance(getApplicationContext()), id);
+        FavoriteFilterViewModel viewModel = ViewModelProviders.of(this, factory).get(FavoriteFilterViewModel.class);
+
+        viewModel.getFavorite().observe(this, new Observer<FavoriteEntity>() {
+            @Override
+            public void onChanged(@Nullable FavoriteEntity favoriteEntity) {
+                markFavoriteIcon(favoriteEntity != null);
+            }
+        });
+    }
+
+    private void markFavoriteIcon(Boolean isFavorite){
+        if(isFavorite){
+            mBtFavorite.setCompoundDrawablesWithIntrinsicBounds( R.drawable.ic_star_black_24dp, 0, 0, 0);
+            currentMovie.setFavorite(true);
+        }else{
+            mBtFavorite.setCompoundDrawablesWithIntrinsicBounds( R.drawable.ic_star_border_black_24dp, 0, 0, 0);
+            currentMovie.setFavorite(false);
+        }
+
     }
 
     private void getTrailers(Long movieId){

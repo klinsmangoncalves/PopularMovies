@@ -1,9 +1,11 @@
 package com.example.popularmovies.model;
 
+import com.example.popularmovies.database.FavoriteEntity;
 import com.example.popularmovies.util.ImageUtils;
 import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Movie implements Serializable {
@@ -37,6 +39,38 @@ public class Movie implements Serializable {
     @SerializedName("genre_ids")
     private List<Integer> genreIds;
 
+    private Boolean favorite;
+
+    public Boolean isFavorite() {
+        return favorite;
+    }
+
+    public void setFavorite(Boolean favorite) {
+        this.favorite = favorite;
+    }
+
+    public Movie() {
+
+    }
+
+    public static List<Movie> getMoviesListFromFavorites(List<FavoriteEntity> favorites){
+
+        List<Movie> movies = new ArrayList<Movie>();
+        for (FavoriteEntity fav: favorites) {
+            movies.add(new Movie(fav));
+        }
+
+        return movies;
+     }
+
+    public Movie(FavoriteEntity favorite) {
+        this.id = favorite.getId();
+        this.title = favorite.getTitle();
+        this.posterPath = favorite.getLocalPosterPath();
+        this.overview = favorite.getOverview();
+        this.releaseDate = favorite.getReleaseDate();
+        this.voteAverage = favorite.getVoteAverage();
+    }
 
     public Float getVoteAverage() {
         return voteAverage;
@@ -48,6 +82,10 @@ public class Movie implements Serializable {
 
     public String getPosterPathUrl(){
         return ImageUtils.getFullImageUrl(posterPath);
+    }
+
+    public String getPosterPath() {
+        return posterPath;
     }
 
     public String getOverview() {
