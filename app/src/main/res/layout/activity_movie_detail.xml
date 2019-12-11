@@ -1,14 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    tools:context=".MovieDetailActivity">
-
-    <ScrollView
+<ScrollView
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        tools:context=".MovieDetailActivity">
 
         <LinearLayout
             android:orientation="vertical"
@@ -74,7 +71,7 @@
                         android:layout_height="wrap_content"
                         android:textColor="#000"
                         android:drawableStart="@drawable/ic_star_border_black_24dp"
-                        android:text="Favorite" />
+                        android:text="@string/favorite_button" />
 
                 </LinearLayout>
 
@@ -100,7 +97,6 @@
                     android:layout_height="wrap_content"
                     android:paddingLeft="4dp"
                     android:paddingRight="4dp"
-                    android:text="The kingdom of Arendelle needs to be evacuated when the forces of nature threaten to destroy it. Elsa, Anna, Olaf and Kristoff set off to find some answers. But Elsa has been distracted. She has been hearing an unfamiliar voice calling out to her in a strange tune. Led by her, the grouThe kingdom of Arendelle needs to be evacuated when the forces of nature threaten to destroy it. Elsa, Anna, Olaf and Kristoff set off to find some answers. But Elsa has been distracted. She has been hearing an unfamiliar voice calling out to her in a strange tune. Led by her, the group follows the melody to find themselves at the edge of an Enchanted Forest with untold mysteries and dangers.p follows the melody to find themselves at the edge of an Enchanted Forest with untold mysteries and dangers."
                     android:textColor="#000"
                     android:textSize="18sp" />
 
@@ -111,7 +107,7 @@
                     android:id="@+id/tv_trailers_label"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Trailers"/>
+                    android:text="@string/trailers_label"/>
 
 
                 <RelativeLayout
@@ -133,7 +129,7 @@
                     android:id="@+id/tv_reviews_label"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Reviews"/>
+                    android:text="@string/reviews_label"/>
 
                 <android.support.v7.widget.RecyclerView
                     android:id="@+id/rv_review_list"
@@ -145,6 +141,4 @@
 
         </LinearLayout>
 
-    </ScrollView>
-
-</FrameLayout>
+</ScrollView>

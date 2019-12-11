@@ -8,7 +8,7 @@ import com.example.popularmovies.database.FavoriteEntity;
 
 public class FavoriteFilterViewModel extends ViewModel {
 
-    LiveData<FavoriteEntity> favorite;
+    private final LiveData<FavoriteEntity> favorite;
 
     public FavoriteFilterViewModel(AppDatabase appDatabase, Long id) {
         favorite = appDatabase.getFavoriteDao().getTaskById(id);

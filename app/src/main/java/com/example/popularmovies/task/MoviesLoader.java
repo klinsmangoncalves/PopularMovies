@@ -14,6 +14,7 @@ import com.example.popularmovies.util.NetworkUtils;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.Objects;
 
 public class MoviesLoader implements LoaderManager.LoaderCallbacks<String> {
 
@@ -21,8 +22,8 @@ public class MoviesLoader implements LoaderManager.LoaderCallbacks<String> {
         void onEndListener(String result);
     }
 
-    final Context mContext;
-    final OnTaskEndListener mOnTaskEndListener;
+    private final Context mContext;
+    private final OnTaskEndListener mOnTaskEndListener;
 
     public MoviesLoader(Context mContext, OnTaskEndListener mOnTaskEndListener) {
         this.mContext = mContext;
@@ -36,15 +37,13 @@ public class MoviesLoader implements LoaderManager.LoaderCallbacks<String> {
             @Override
             protected void onStartLoading() {
                 super.onStartLoading();
-                Log.d("LOADER_MOVIE", "onStartLoading");
                 forceLoad();
             }
 
             @Nullable
             @Override
             public String loadInBackground() {
-                Log.d("LOADER_MOVIE", "loadInBackground");
-                URL url =  (URL) bundle.getSerializable(MainActivity.URL_MOVIE_EXTRA);
+                URL url =  (URL) Objects.requireNonNull(bundle).getSerializable(MainActivity.URL_MOVIE_EXTRA);
 
                 if(url == null){
                     return null;
@@ -63,12 +62,9 @@ public class MoviesLoader implements LoaderManager.LoaderCallbacks<String> {
 
     @Override
     public void onLoadFinished(@NonNull Loader<String> loader, String s) {
-        Log.d("LOADER_MOVIE", "loadFinished");
         if(mOnTaskEndListener != null){
             mOnTaskEndListener.onEndListener(s);
         }
-
-
     }
 
     @Override

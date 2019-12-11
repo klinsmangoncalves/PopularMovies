@@ -13,11 +13,12 @@ import com.example.popularmovies.util.NetworkUtils;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.Objects;
 
 public class ReviewsLoader implements LoaderManager.LoaderCallbacks<String> {
 
-    final Context mContext;
-    final ReviewsLoader.OnReviewLoadFinish mListener;
+    private final Context mContext;
+    private final ReviewsLoader.OnReviewLoadFinish mListener;
 
     public interface OnReviewLoadFinish{
         void reviewLoadFinish(String ReviewsJson);
@@ -41,7 +42,7 @@ public class ReviewsLoader implements LoaderManager.LoaderCallbacks<String> {
             @Nullable
             @Override
             public String loadInBackground() {
-                URL url =  (URL) bundle.getSerializable(MovieDetailActivity.REVIEW_URL_EXTRA);
+                URL url =  (URL) Objects.requireNonNull(bundle).getSerializable(MovieDetailActivity.REVIEW_URL_EXTRA);
 
                 if(url == null){
                     return null;

@@ -55,7 +55,7 @@ public class Movie implements Serializable {
 
     public static List<Movie> getMoviesListFromFavorites(List<FavoriteEntity> favorites){
 
-        List<Movie> movies = new ArrayList<Movie>();
+        List<Movie> movies = new ArrayList<>();
         for (FavoriteEntity fav: favorites) {
             movies.add(new Movie(fav));
         }
@@ -63,7 +63,7 @@ public class Movie implements Serializable {
         return movies;
      }
 
-    public Movie(FavoriteEntity favorite) {
+    private Movie(FavoriteEntity favorite) {
         this.id = favorite.getId();
         this.title = favorite.getTitle();
         this.posterPath = favorite.getLocalPosterPath();

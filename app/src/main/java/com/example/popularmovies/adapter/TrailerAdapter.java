@@ -16,11 +16,11 @@ import java.util.List;
 public class TrailerAdapter extends RecyclerView.Adapter<TrailerAdapter.TrailerViewHolder>{
 
     private List<Trailer.TrailerDetail> trailerDetails;
-    private OnTrailerClickListener mTrailerClickListener;
+    private final OnTrailerClickListener mTrailerClickListener;
 
     public interface OnTrailerClickListener {
         void onTrailerClickListener(String trailerName);
-    };
+    }
 
     public TrailerAdapter(List<Trailer.TrailerDetail> trailerDetails, OnTrailerClickListener mTrailerClickListener) {
         this.trailerDetails = trailerDetails;
@@ -37,8 +37,7 @@ public class TrailerAdapter extends RecyclerView.Adapter<TrailerAdapter.TrailerV
         Context context = viewGroup.getContext();
         LayoutInflater inflater = LayoutInflater.from(context);
         View view = inflater.inflate(R.layout.trailer_item, viewGroup, false);
-        TrailerViewHolder trailerViewHolder = new TrailerViewHolder(view);
-        return trailerViewHolder;
+        return new TrailerViewHolder(view);
     }
 
     @Override
@@ -54,9 +53,9 @@ public class TrailerAdapter extends RecyclerView.Adapter<TrailerAdapter.TrailerV
 
     class TrailerViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
 
-        TextView trailerTitle;
+        final TextView trailerTitle;
 
-        public TrailerViewHolder(@NonNull View itemView) {
+        TrailerViewHolder(@NonNull View itemView) {
             super(itemView);
             trailerTitle = itemView.findViewById(R.id.tv_trailer_title);
             itemView.setOnClickListener(this);

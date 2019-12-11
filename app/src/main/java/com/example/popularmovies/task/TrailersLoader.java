@@ -8,17 +8,17 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.AsyncTaskLoader;
 import android.support.v4.content.Loader;
 
-import com.example.popularmovies.MainActivity;
 import com.example.popularmovies.MovieDetailActivity;
 import com.example.popularmovies.util.NetworkUtils;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.Objects;
 
 public class TrailersLoader implements LoaderManager.LoaderCallbacks<String> {
 
-    final Context mContext;
-    final OnTrailerLoadFinish mListener;
+    private final Context mContext;
+    private final OnTrailerLoadFinish mListener;
 
     public interface OnTrailerLoadFinish{
         void trailerLoadFinish(String trailersJson);
@@ -42,7 +42,7 @@ public class TrailersLoader implements LoaderManager.LoaderCallbacks<String> {
             @Nullable
             @Override
             public String loadInBackground() {
-                URL url =  (URL) bundle.getSerializable(MovieDetailActivity.TRAILER_URL_EXTRA);
+                URL url =  (URL) Objects.requireNonNull(bundle).getSerializable(MovieDetailActivity.TRAILER_URL_EXTRA);
 
                 if(url == null){
                     return null;

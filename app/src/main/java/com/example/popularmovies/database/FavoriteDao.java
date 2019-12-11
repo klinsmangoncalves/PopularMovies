@@ -19,9 +19,6 @@ public interface FavoriteDao {
     @Query("SELECT * FROM favorite ORDER BY title")
     LiveData<List<FavoriteEntity>> getAllFavorites();
 
-    @Update(onConflict = OnConflictStrategy.REPLACE)
-    void updateFavorite(FavoriteEntity favorite);
-
     @Delete
     void deleteFavorite(FavoriteEntity favorite);
 

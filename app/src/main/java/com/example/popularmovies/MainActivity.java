@@ -1,6 +1,5 @@
 package com.example.popularmovies;
 
-import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
@@ -55,13 +54,11 @@ public class MainActivity extends AppCompatActivity implements MoviesLoader.OnTa
     private String mCurrentLanguage;
     private Integer mCurrentQuery;
 
-    private String CURRENT_QUERY_EXTRA = "current_query_extra";
-    private String CURRENT_PAGE_EXTRA = "current_page_extra";
+    private final String CURRENT_QUERY_EXTRA = "current_query_extra";
+    private final String CURRENT_PAGE_EXTRA = "current_page_extra";
 
-    private AppDatabase appDB;
-
-    FavoritesObserver favoritesObserver;
-    FavoriteViewModel favoriteViewModel ;
+    private FavoritesObserver favoritesObserver;
+    private FavoriteViewModel favoriteViewModel ;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,7 +70,6 @@ public class MainActivity extends AppCompatActivity implements MoviesLoader.OnTa
         mCurrentLanguage = Locale.getDefault().getLanguage();
 
         mMoviesLoader = new MoviesLoader(this, this);
-        appDB = AppDatabase.getInstance(getApplicationContext());
 
         //restore the user state
         if(savedInstanceState != null && savedInstanceState.containsKey(CURRENT_QUERY_EXTRA) && savedInstanceState.containsKey(CURRENT_PAGE_EXTRA)){
@@ -190,10 +186,8 @@ public class MainActivity extends AppCompatActivity implements MoviesLoader.OnTa
         LoaderManager loaderManager = getSupportLoaderManager();
         Loader<String> stringLoader = loaderManager.getLoader(LOAD_MOVIE_LOADER_ID);
         if(stringLoader == null){
-            Log.d("LOADER_MOVIE", "initLoader");
             loaderManager.initLoader(LOAD_MOVIE_LOADER_ID, bundle, mMoviesLoader);
         } else {
-            Log.d("LOADER_MOVIE", "restartLoader");
             loaderManager.restartLoader(LOAD_MOVIE_LOADER_ID, bundle, mMoviesLoader);
         }
     }

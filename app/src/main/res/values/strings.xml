@@ -13,5 +13,9 @@
     <string name="cd_image">Trailer image</string>
     <string name="menu_next">Next</string>
     <string name="menu_back">Back</string>
+    <string name="favorite_button">Favorite</string>
+    <string name="reviews_label">Reviews</string>
+    <string name="trailers_label">Trailers</string>
+    <string name="post_auhtor">%1$s says:</string>
 
 </resources>

@@ -14,7 +14,7 @@
         app:srcCompat="@drawable/ic_play_circle_outline_black_24dp" />
 
     <TextView
-        android:layout_marginLeft="5dp"
+        android:layout_marginStart="5dp"
         tools:text="Trailer Name"
         android:id="@+id/tv_trailer_title"
         android:layout_width="match_parent"

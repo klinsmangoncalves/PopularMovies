@@ -35,14 +35,14 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewView
         Context context = viewGroup.getContext();
         LayoutInflater inflater = LayoutInflater.from(context);
         View view = inflater.inflate(R.layout.review_item, viewGroup, false);
-        ReviewViewHolder viewHolder = new ReviewViewHolder(view);
-        return viewHolder;
+        return new ReviewViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull ReviewViewHolder reviewViewHolder, int i) {
         Review.ReviewDetail reviewDetail = mReviews.get(i);
-        reviewViewHolder.tvAuthor.setText(reviewDetail.getAuthor() + " says:");
+        Context context = reviewViewHolder.tvAuthor.getContext();
+        reviewViewHolder.tvAuthor.setText(context.getString(R.string.post_auhtor, reviewDetail.getAuthor()));
         reviewViewHolder.tvReviewContent.setText(reviewDetail.getContent());
     }
 
@@ -53,10 +53,10 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewView
 
     class ReviewViewHolder extends RecyclerView.ViewHolder{
 
-        TextView tvAuthor;
-        TextView tvReviewContent;
+        final TextView tvAuthor;
+        final TextView tvReviewContent;
 
-        public ReviewViewHolder(@NonNull View itemView) {
+        ReviewViewHolder(@NonNull View itemView) {
             super(itemView);
             tvAuthor = itemView.findViewById(R.id.tv_review_author);
             tvReviewContent = itemView.findViewById(R.id.tv_review_content);

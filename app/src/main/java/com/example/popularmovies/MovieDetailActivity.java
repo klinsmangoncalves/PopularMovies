@@ -1,7 +1,6 @@
 package com.example.popularmovies;
 
 import android.arch.lifecycle.Observer;
-import android.arch.lifecycle.ViewModel;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.net.Uri;
@@ -39,16 +38,16 @@ import java.util.Objects;
 
 public class MovieDetailActivity extends AppCompatActivity implements  TrailersLoader.OnTrailerLoadFinish, TrailerAdapter.OnTrailerClickListener, ReviewsLoader.OnReviewLoadFinish {
 
-    private String TAG = "MovieDetailActivity";
-    private static int TRAILER_LOADER_ID = 102;
-    private static int REVIEW_LOADER_ID = 103;
-    private static int FAVORITE_LOADER_ID = 104;
-    public static String TRAILER_URL_EXTRA = "trailer_url_extra";
+    private final String TAG = "MovieDetailActivity";
+    private static final int TRAILER_LOADER_ID = 102;
+    private static final int REVIEW_LOADER_ID = 103;
+    private static final int FAVORITE_LOADER_ID = 104;
+    public static final String TRAILER_URL_EXTRA = "trailer_url_extra";
     public static final String REVIEW_URL_EXTRA = "review_url_extra";
     public static final String FAVORITE_EXTRA = "favorite_extra";
     public static final String WRITE_OPTION_EXTRA = "delete_insert_option_extra";
     public static final Integer OPTION_INSERT = 1;
-    public static final Integer OPTION_DELETE = 0;
+    private static final Integer OPTION_DELETE = 0;
 
 
     /** String used to handle the data transferred from intent */
@@ -130,7 +129,7 @@ public class MovieDetailActivity extends AppCompatActivity implements  TrailersL
 
     }
 
-    public void onClickFavoriteMovie(){
+    private void onClickFavoriteMovie(){
 
         FavoriteEntity favoriteEntity = new FavoriteEntity(currentMovie);
         LoaderManager loaderManager = getSupportLoaderManager();

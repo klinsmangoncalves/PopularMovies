@@ -12,9 +12,11 @@ import com.example.popularmovies.MovieDetailActivity;
 import com.example.popularmovies.database.AppDatabase;
 import com.example.popularmovies.database.FavoriteEntity;
 
+import java.util.Objects;
+
 public class FavoriteLoader implements LoaderManager.LoaderCallbacks<Void> {
 
-    private Context context;
+    private final Context context;
 
     public FavoriteLoader(Context context) {
         this.context = context;
@@ -40,7 +42,7 @@ public class FavoriteLoader implements LoaderManager.LoaderCallbacks<Void> {
                 }
                 FavoriteEntity favoriteEntity = (FavoriteEntity) bundle.getSerializable(MovieDetailActivity.FAVORITE_EXTRA);
                 Integer writeOption = bundle.getInt(MovieDetailActivity.WRITE_OPTION_EXTRA);
-                if(writeOption == MovieDetailActivity.OPTION_INSERT){
+                if(Objects.equals(writeOption, MovieDetailActivity.OPTION_INSERT)){
                     AppDatabase.getInstance(context).getFavoriteDao().insertFavorite(favoriteEntity);
                 }else{
                     AppDatabase.getInstance(context).getFavoriteDao().deleteFavorite(favoriteEntity);
