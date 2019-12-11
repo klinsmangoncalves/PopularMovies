@@ -78,7 +78,6 @@ public class MainActivity extends AppCompatActivity implements MoviesLoader.OnTa
         } else {
             //default page when app starts
             requestTopRatedMovies(null);
-
         }
 
         appDB = AppDatabase.getInstance(getApplicationContext());
