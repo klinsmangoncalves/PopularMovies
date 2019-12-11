@@ -40,6 +40,7 @@ public class MainActivity extends AppCompatActivity implements MoviesLoader.OnTa
 
     private final int PAGE_QUERY_POPULAR = 0;
     private final int PAGE_QUERY_TOP_RATED = 1;
+    private final int PAGE_QUERY_FAVORITES = 2;
 
     public static final String URL_MOVIE_EXTRA = "url_extra";
 
@@ -59,6 +60,9 @@ public class MainActivity extends AppCompatActivity implements MoviesLoader.OnTa
 
     private AppDatabase appDB;
 
+    FavoritesObserver favoritesObserver;
+    FavoriteViewModel favoriteViewModel ;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -69,6 +73,7 @@ public class MainActivity extends AppCompatActivity implements MoviesLoader.OnTa
         mCurrentLanguage = Locale.getDefault().getLanguage();
 
         mMoviesLoader = new MoviesLoader(this, this);
+        appDB = AppDatabase.getInstance(getApplicationContext());
 
         //restore the user state
         if(savedInstanceState != null && savedInstanceState.containsKey(CURRENT_QUERY_EXTRA) && savedInstanceState.containsKey(CURRENT_PAGE_EXTRA)){
@@ -79,8 +84,6 @@ public class MainActivity extends AppCompatActivity implements MoviesLoader.OnTa
             //default page when app starts
             requestTopRatedMovies(null);
         }
-
-        appDB = AppDatabase.getInstance(getApplicationContext());
     }
 
     @Override
@@ -118,7 +121,7 @@ public class MainActivity extends AppCompatActivity implements MoviesLoader.OnTa
     }
 
     private void setAdapterData(MoviesResponse response) {
-        Log.d(TAG, "Setting adapter");
+        Log.i(TAG, "setAdapterMovies");
         int orientation = getResources().getConfiguration().orientation;
 
         GridLayoutManager gridLayoutManager;
@@ -148,7 +151,7 @@ public class MainActivity extends AppCompatActivity implements MoviesLoader.OnTa
     }
 
     private void setAdapterFavorite(List<FavoriteEntity> favorites) {
-        Log.d(TAG, "Setting adapter");
+        Log.i(TAG, "setAdapterFavorite");
         int orientation = getResources().getConfiguration().orientation;
 
         GridLayoutManager gridLayoutManager;
@@ -197,6 +200,7 @@ public class MainActivity extends AppCompatActivity implements MoviesLoader.OnTa
 
     private void requestPopularMovies(Integer page) {
         showLoading();
+        removeDatabaseObservers();
         mCurrentQuery = PAGE_QUERY_POPULAR;
         URL popularMovies = NetworkUtils.buildUrlMoviesPopular(mCurrentLanguage, page);
         runNetworkTaskInBackground(popularMovies);
@@ -204,35 +208,32 @@ public class MainActivity extends AppCompatActivity implements MoviesLoader.OnTa
 
     private void requestTopRatedMovies(Integer page) {
         showLoading();
+        removeDatabaseObservers();
         mCurrentQuery = PAGE_QUERY_TOP_RATED;
         URL topRatedMovies = NetworkUtils.buildUrlMoviesTopRated(mCurrentLanguage, page);
         runNetworkTaskInBackground(topRatedMovies);
     }
 
     private void requestFavorites() {
-        getSupportLoaderManager().destroyLoader(LOAD_MOVIE_LOADER_ID);
         showLoading();
-        final LiveData<List<FavoriteEntity>> favorites = appDB.getFavoriteDao().getAllFavorites();
-        favorites.observe(this, new Observer<List<FavoriteEntity>>() {
-            @Override
-            public void onChanged(@Nullable List<FavoriteEntity> favoriteEntities) {
-                setAdapterFavorite(favoriteEntities);
-                favorites.removeObserver(this);
-            }
-        });
+        removerLoaders();
+        mCurrentQuery = PAGE_QUERY_FAVORITES;
+        favoriteViewModel = ViewModelProviders.of(this).get(FavoriteViewModel.class);
+        favoritesObserver = new FavoritesObserver();
+        favoriteViewModel.getFavorites().observe(this, favoritesObserver);
     }
 
-    private void requestFavoritesViewModel() {
-        showLoading();
+    /** When the user is viewing and adding favorite the favorite list does not need to be observed */
+    private void removeDatabaseObservers(){
+        if(favoriteViewModel != null && favoritesObserver != null){
+            favoriteViewModel.getFavorites().removeObserver(favoritesObserver);
+        }
+    }
 
-        FavoriteViewModel viewModel = ViewModelProviders.of(this).get(FavoriteViewModel.class);
-        viewModel.getFavorites().observe(this, new Observer<List<FavoriteEntity>>() {
-            @Override
-            public void onChanged(@Nullable List<FavoriteEntity> favoriteEntities) {
-                setAdapterFavorite(favoriteEntities);
-            }
-        });
-
+    /** When the user is viewing the favorites the loader can be removed to avoid load a movies
+     * list in favorites activity*/
+    private void removerLoaders(){
+        getSupportLoaderManager().destroyLoader(LOAD_MOVIE_LOADER_ID);
     }
 
     private void goToPage(Integer queryPath, int page) {
@@ -240,9 +241,11 @@ public class MainActivity extends AppCompatActivity implements MoviesLoader.OnTa
             case PAGE_QUERY_POPULAR:
                 requestPopularMovies(page);
                 break;
-
             case PAGE_QUERY_TOP_RATED:
                 requestTopRatedMovies(page);
+                break;
+            case PAGE_QUERY_FAVORITES:
+                requestFavorites();
                 break;
         }
 
@@ -342,4 +345,14 @@ public class MainActivity extends AppCompatActivity implements MoviesLoader.OnTa
         intent.putExtra(MovieDetailActivity.MOVIE_KEY, movie);
         startActivity(intent);
     }
+
+    class FavoritesObserver implements Observer<List<FavoriteEntity>>{
+
+        @Override
+        public void onChanged(@Nullable List<FavoriteEntity> favoriteEntities) {
+            setAdapterFavorite(favoriteEntities);
+            //favorites.removeObserver(this);
+        }
+    }
+
 }

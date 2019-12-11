@@ -73,7 +73,7 @@
                         style="@style/Widget.AppCompat.Button.Colored"
                         android:layout_height="wrap_content"
                         android:textColor="#000"
-                        android:drawableLeft="@drawable/ic_star_border_black_24dp"
+                        android:drawableStart="@drawable/ic_star_border_black_24dp"
                         android:text="Favorite" />
 
                 </LinearLayout>
